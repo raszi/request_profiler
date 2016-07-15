@@ -1,5 +1,6 @@
 require 'ruby-prof'
 require 'tmpdir'
+require 'pathname'
 
 module Rack
   class RequestProfiler
