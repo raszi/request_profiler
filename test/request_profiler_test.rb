@@ -31,6 +31,10 @@ class RequestProfilerTest < Test::Unit::TestCase
   end
 
   def test_mode_set_by_param
+    RubyProf.stubs(:start)
+    RubyProf.stubs(:stop)
+    Rack::RequestProfiler::Base.any_instance.stubs(:write_result)
+
     self.app = Rack::RequestProfiler.new(FakeApp.new)
     RubyProf.expects(:measure_mode=).with(::RubyProf::PROCESS_TIME)
     get '/?profile_request=true'

@@ -6,7 +6,7 @@ module Rack
   class RequestProfiler
     def initialize(app, options = {})
       @app = app
-      @options = parse_options(options)
+      @options = self.class.parse_options(options)
     end
 
     def call(env)
@@ -22,7 +22,7 @@ module Rack
       [status, headers, body]
     end
 
-    def parse_options(options)
+    def self.parse_options(options = {})
       {
         printer_class: options[:printer] || ::RubyProf::GraphHtmlPrinter,
         exclusions: options[:exclude],
@@ -30,7 +30,7 @@ module Rack
       }
     end
 
-    def parse_path(path)
+    def self.parse_path(path)
       return path if path
       return ::File.join(Rails.root 'tmp', 'performance') if defined?(Rails)
       ::File.join(Dir.tmpdir, 'performance')
@@ -40,3 +40,4 @@ end
 
 require 'rack/request_profiler/base'
 require 'rack/request_profiler/single'
+require 'rack/request_profiler/multi'

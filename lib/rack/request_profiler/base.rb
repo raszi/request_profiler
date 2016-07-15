@@ -1,4 +1,6 @@
 class Rack::RequestProfiler::Base
+  REGULAR_ACTIONS = ['1', 'true', 'stop']
+
   def initialize(request, options)
     @request = request
     @options = options
@@ -21,16 +23,17 @@ class Rack::RequestProfiler::Base
   def self.from(request, options)
     params = request.params
 
-    mode = parse_mode(params['profile_request'])
+    mode = parse_mode(params['profile_request'] || params['profile_requests'])
     return unless mode
 
-    Rack::RequestProfiler::Single.new(request, options.merge(mode: mode))
+    profiler_class = params['profile_request'] ? Rack::RequestProfiler::Single : Rack::RequestProfiler::Multi
+    profiler_class.new(request, options.merge(mode: mode))
   end
 
   def self.parse_mode(mode_string)
     return unless mode_string
 
-    if mode_string.downcase == 'true' or mode_string == '1'
+    if REGULAR_ACTIONS.include?(mode_string.downcase)
       ::RubyProf::PROCESS_TIME
     else
       ::RubyProf.const_get(mode_string.upcase)
@@ -42,8 +45,9 @@ class Rack::RequestProfiler::Base
 
     result.eliminate_methods!(exclusions) if exclusions
     printer = printer_class.new(result)
+    time = Time.now.strftime('%Y-%m-%d-%H-%M-%S')
 
-    ::File.open(path.join("#{prefix}#{basename}.#{extension}"), 'w+') do |f|
+    ::File.open(path.join("#{prefix}#{time}#{basename}.#{extension}"), 'w+') do |f|
       printer.print(f)
     end
   end
