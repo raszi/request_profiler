@@ -25,7 +25,7 @@ class RequestProfilerTest < Test::Unit::TestCase
     self.app = Rack::RequestProfiler.new(FakeApp.new)
     RubyProf.expects(:start).once
     RubyProf.expects(:stop).once
-    app.expects(:write_result).once
+    Rack::RequestProfiler::Base.any_instance.expects(:write_result).once
     get '/?profile_request=true'
     assert last_response.ok?
   end
@@ -40,15 +40,4 @@ class RequestProfilerTest < Test::Unit::TestCase
     get '/?profile_request=wall_time'
     assert last_response.ok?
   end
-
-  def test_file_format
-    self.app = Rack::RequestProfiler.new(FakeApp.new)
-    RubyProf.start
-    results = RubyProf.stop
-    printer = self.app.instance_variable_get(:@printer).new(results)
-
-    assert_equal ::RubyProf::GraphHtmlPrinter, printer.class
-    assert_equal 'html', self.app.format(printer)
-  end
-
 end
