@@ -1,4 +1,5 @@
 require 'ruby-prof'
+require 'tmpdir'
 
 module Rack
   class RequestProfiler
@@ -8,8 +9,8 @@ module Rack
       @exclusions = options[:exclude]
 
       @path = options[:path]
-      @path ||= Rails.root + 'tmp/performance' if defined?(Rails)
-      @path ||= ::File.join((ENV['TMPDIR'] || '/tmp'), 'performance')
+      @path ||= ::File.join(Rails.root 'tmp', 'performance') if defined?(Rails)
+      @path ||= ::File.join(Dir.tmpdir, 'performance')
       @path = Pathname(@path)
     end
 
@@ -78,7 +79,8 @@ module Rack
       Dir.mkdir(@path) unless ::File.exist?(@path)
       url = request.fullpath.gsub(/[?\/]/, '-')
       filename = "#{prefix(printer)}#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}-#{url.slice(0, 50)}.#{format(printer)}"
-      ::File.open(@path + filename, 'w+') do |f|
+
+      ::File.open(@path.join(filename), 'w+') do |f|
         printer.print(f)
       end
     end
