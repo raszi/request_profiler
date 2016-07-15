@@ -9,7 +9,7 @@ module Rack
 
       @path = options[:path]
       @path ||= Rails.root + 'tmp/performance' if defined?(Rails)
-      @path ||= ::File.join((ENV["TMPDIR"] || "/tmp"), 'performance')
+      @path ||= ::File.join((ENV['TMPDIR'] || '/tmp'), 'performance')
       @path = Pathname(@path)
     end
 
@@ -32,9 +32,9 @@ module Rack
     end
 
     def profile_mode(request)
-      mode_string = request.params["profile_request"]
+      mode_string = request.params['profile_request']
       if mode_string
-        if mode_string.downcase == "true" or mode_string == "1"
+        if mode_string.downcase == 'true' or mode_string == '1'
           ::RubyProf::PROCESS_TIME
         else
           ::RubyProf.const_get(mode_string.upcase)
@@ -66,9 +66,9 @@ module Rack
     def prefix(printer)
       case printer
       when ::RubyProf::CallTreePrinter
-        "callgrind."
+        'callgrind.'
       else
-        ""
+        ''
       end
     end
 

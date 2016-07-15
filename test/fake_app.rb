@@ -1,7 +1,7 @@
 require 'sinatra'
 
 class FakeApp < Sinatra::Base
-  get "/" do
-    "foo"
+  get '/' do
+    'foo'
   end
 end

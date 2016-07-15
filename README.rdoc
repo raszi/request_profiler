@@ -12,7 +12,7 @@ After the gem is installed, it's used in the same way any rack
 middleware is set up. In Rails, you'd probably want to do something
 like this:
 
-  config.middleware.use "Rack::RequestProfiler"
+  config.middleware.use 'Rack::RequestProfiler'
 
 +request_profiler+ takes a few optional parameters:
 
